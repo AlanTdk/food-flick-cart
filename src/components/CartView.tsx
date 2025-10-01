@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   Sheet,
   SheetContent,
@@ -10,6 +11,7 @@ import { useCart } from '@/contexts/CartContext';
 import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
 import { ScrollArea } from './ui/scroll-area';
 import { Separator } from './ui/separator';
+import { OrderTypeModal } from './OrderTypeModal';
 
 interface CartViewProps {
   open: boolean;
@@ -19,10 +21,35 @@ interface CartViewProps {
 export const CartView: React.FC<CartViewProps> = ({ open, onOpenChange }) => {
   const { cartItems, updateQuantity, removeFromCart, getTotalPrice, getTotalItems, clearCart } =
     useCart();
+  const [showOrderTypeModal, setShowOrderTypeModal] = useState(false);
 
   const handleCheckout = () => {
-    alert('¡Pedido realizado con éxito! Total: $' + getTotalPrice().toFixed(2));
+    setShowOrderTypeModal(true);
+  };
+
+  const handleOrderTypeConfirm = (orderType: 'dine-in' | 'delivery') => {
+    const total = getTotalPrice() + 2.50;
+    const orderTypeText = orderType === 'dine-in' ? 'Para Comer Aquí' : 'Enviar a Domicilio';
+    
+    let message = `🍔 *Nuevo Pedido - Feast*\n\n`;
+    message += `📋 *Tipo de Pedido:* ${orderTypeText}\n\n`;
+    message += `*Productos:*\n`;
+    
+    cartItems.forEach((item) => {
+      message += `• ${item.name} x${item.quantity} - $${(item.price * item.quantity).toFixed(2)}\n`;
+    });
+    
+    message += `\n*Subtotal:* $${getTotalPrice().toFixed(2)}\n`;
+    message += `*Envío:* $2.50\n`;
+    message += `*Total:* $${total.toFixed(2)}`;
+
+    const phoneNumber = '1234567890'; // Reemplaza con tu número de WhatsApp
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    
+    window.open(whatsappUrl, '_blank');
+    
     clearCart();
+    setShowOrderTypeModal(false);
     onOpenChange(false);
   };
 
@@ -151,6 +178,12 @@ export const CartView: React.FC<CartViewProps> = ({ open, onOpenChange }) => {
           </>
         )}
       </SheetContent>
+
+      <OrderTypeModal
+        open={showOrderTypeModal}
+        onOpenChange={setShowOrderTypeModal}
+        onConfirm={handleOrderTypeConfirm}
+      />
     </Sheet>
   );
 };
