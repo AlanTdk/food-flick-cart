@@ -12,6 +12,7 @@ import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
 import { ScrollArea } from './ui/scroll-area';
 import { Separator } from './ui/separator';
 import { OrderTypeModal } from './OrderTypeModal';
+import { OrderSummaryModal } from './OrderSummaryModal';
 
 interface CartViewProps {
   open: boolean;
@@ -22,34 +23,78 @@ export const CartView: React.FC<CartViewProps> = ({ open, onOpenChange }) => {
   const { cartItems, updateQuantity, removeFromCart, getTotalPrice, getTotalItems, clearCart } =
     useCart();
   const [showOrderTypeModal, setShowOrderTypeModal] = useState(false);
+  const [showSummaryModal, setShowSummaryModal] = useState(false);
+  const [orderDetails, setOrderDetails] = useState<{
+    orderType: 'dine-in' | 'delivery';
+    customerDetails: any;
+  } | null>(null);
 
   const handleCheckout = () => {
     setShowOrderTypeModal(true);
   };
 
-  const handleOrderTypeConfirm = (orderType: 'dine-in' | 'delivery') => {
-    const total = getTotalPrice() + 2.50;
-    const orderTypeText = orderType === 'dine-in' ? 'Para Comer Aquí' : 'Enviar a Domicilio';
-    
-    let message = `🍔 *Nuevo Pedido - Feast*\n\n`;
-    message += `📋 *Tipo de Pedido:* ${orderTypeText}\n\n`;
-    message += `*Productos:*\n`;
-    
+  const handleOrderTypeConfirm = (orderType: 'dine-in' | 'delivery', details: any) => {
+    setOrderDetails({ orderType, customerDetails: details });
+    setShowOrderTypeModal(false);
+    setShowSummaryModal(true);
+  };
+
+  const handleSummaryBack = () => {
+    setShowSummaryModal(false);
+    setShowOrderTypeModal(true);
+  };
+
+  const handleFinalConfirm = () => {
+    if (!orderDetails) return;
+
+    const { orderType, customerDetails } = orderDetails;
+    const businessPhoneNumber = '9614045971';
+    const shippingCost = 2.50;
+    const orderTypeText = orderType === 'dine-in' ? 'Para consumir en el restaurante' : 'Envío a domicilio';
+    const messageTitle = orderType === 'dine-in' ? '◆ NUEVO PEDIDO - Sabores Digi' : '◆ NUEVO PEDIDO - Sabores Digi';
+
+    let message = `${messageTitle}\n\n`;
+    message += `◆ *Cliente:* ${customerDetails.name}\n`;
+
+    if (orderType === 'dine-in') {
+      message += `◆ ${orderTypeText}\n`;
+      message += `◆ *Mesa:* ${customerDetails.tableNumber}\n`;
+    } else {
+      message += `◆ ${orderTypeText}\n`;
+      message += `◆ *WhatsApp:* ${customerDetails.whatsappNumber}\n`;
+      message += `◆ *Dirección:* ${customerDetails.fullAddress}\n`;
+      if (customerDetails.references) {
+        message += `◆ *Referencias:* ${customerDetails.references}\n`;
+      }
+    }
+
+    message += `\n◆ *Productos:*\n`;
     cartItems.forEach((item) => {
       message += `• ${item.name} x${item.quantity} - $${(item.price * item.quantity).toFixed(2)}\n`;
     });
-    
-    message += `\n*Subtotal:* $${getTotalPrice().toFixed(2)}\n`;
-    message += `*Envío:* $2.50\n`;
-    message += `*Total:* $${total.toFixed(2)}`;
 
-    const phoneNumber = '1234567890'; // Reemplaza con tu número de WhatsApp
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-    
+    const subtotal = getTotalPrice();
+    let total = subtotal;
+
+    if (orderType === 'delivery') {
+      total += shippingCost;
+    }
+
+    message += `\n◆ *Total:* $${total.toFixed(2)} MXN`;
+
+    if (customerDetails.additionalComments) {
+      message += `\n\n◆ *Comentarios:* ${customerDetails.additionalComments}`;
+    }
+
+    message += `\n\n¡Gracias por tu pedido! ◆`;
+
+    const whatsappUrl = `https://wa.me/${businessPhoneNumber}?text=${encodeURIComponent(message)}`;
+
     window.open(whatsappUrl, '_blank');
-    
+
     clearCart();
-    setShowOrderTypeModal(false);
+    setShowSummaryModal(false);
+    setOrderDetails(null);
     onOpenChange(false);
   };
 
@@ -184,6 +229,19 @@ export const CartView: React.FC<CartViewProps> = ({ open, onOpenChange }) => {
         onOpenChange={setShowOrderTypeModal}
         onConfirm={handleOrderTypeConfirm}
       />
+
+      {orderDetails && (
+        <OrderSummaryModal
+          open={showSummaryModal}
+          onOpenChange={setShowSummaryModal}
+          orderType={orderDetails.orderType}
+          customerDetails={orderDetails.customerDetails}
+          cartItems={cartItems}
+          totalPrice={orderDetails.orderType === 'delivery' ? getTotalPrice() + 2.50 : getTotalPrice()}
+          onConfirm={handleFinalConfirm}
+          onBack={handleSummaryBack}
+        />
+      )}
     </Sheet>
   );
 };
