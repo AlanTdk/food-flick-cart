@@ -65,9 +65,6 @@ export const OrderSummaryModal: React.FC<OrderSummaryModalProps> = ({
               ) : (
                 <>
                   <p>
-                    <span className="font-semibold">Ubicación:</span> {customerDetails.location}
-                  </p>
-                  <p>
                     <span className="font-semibold">WhatsApp:</span> {customerDetails.whatsappNumber}
                   </p>
                   <p>
@@ -78,6 +75,9 @@ export const OrderSummaryModal: React.FC<OrderSummaryModalProps> = ({
                       <span className="font-semibold">Referencias:</span> {customerDetails.references}
                     </p>
                   )}
+                  <p className="text-sm text-muted-foreground italic mt-2">
+                    * El costo de envío será cotizado por un asesor
+                  </p>
                 </>
               )}
             </div>
@@ -99,12 +99,12 @@ export const OrderSummaryModal: React.FC<OrderSummaryModalProps> = ({
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Subtotal:</span>
-                <span className="font-medium">${(totalPrice - shippingCost).toFixed(2)}</span>
+                <span className="font-medium">${totalPrice.toFixed(2)}</span>
               </div>
-              {orderType === 'delivery' && shippingCost > 0 && (
+              {orderType === 'delivery' && (
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Envío:</span>
-                  <span className="font-medium">${shippingCost.toFixed(2)}</span>
+                  <span className="font-medium text-muted-foreground italic">A cotizar</span>
                 </div>
               )}
               <div className="flex justify-between text-lg font-bold border-t pt-2">
