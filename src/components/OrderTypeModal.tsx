@@ -26,7 +26,6 @@ export const OrderTypeModal: React.FC<OrderTypeModalProps> = ({
   const [formData, setFormData] = useState({
     name: '',
     tableNumber: '',
-    location: '',
     whatsappNumber: '',
     fullAddress: '',
     references: '',
@@ -40,7 +39,7 @@ export const OrderTypeModal: React.FC<OrderTypeModalProps> = ({
       if (selectedType === 'dine-in' && formData.name && formData.tableNumber) {
         onConfirm(selectedType, formData);
         resetForm();
-      } else if (selectedType === 'delivery' && formData.name && formData.location && formData.whatsappNumber && formData.fullAddress) {
+      } else if (selectedType === 'delivery' && formData.name && formData.whatsappNumber && formData.fullAddress) {
         onConfirm(selectedType, formData);
         resetForm();
       }
@@ -53,7 +52,6 @@ export const OrderTypeModal: React.FC<OrderTypeModalProps> = ({
     setFormData({
       name: '',
       tableNumber: '',
-      location: '',
       whatsappNumber: '',
       fullAddress: '',
       references: '',
@@ -74,7 +72,7 @@ export const OrderTypeModal: React.FC<OrderTypeModalProps> = ({
     if (selectedType === 'dine-in') {
       return formData.name.trim() && formData.tableNumber.trim();
     } else if (selectedType === 'delivery') {
-      return formData.name.trim() && formData.location.trim() && formData.whatsappNumber.trim() && formData.fullAddress.trim();
+      return formData.name.trim() && formData.whatsappNumber.trim() && formData.fullAddress.trim();
     }
     return false;
   };
@@ -180,20 +178,11 @@ export const OrderTypeModal: React.FC<OrderTypeModalProps> = ({
                   <>
                     <div>
                       <label className="text-sm font-medium text-foreground mb-2 block">
-                        Ubicación *
+                        Costo del envío *
                       </label>
-                      <select
-                        value={formData.location}
-                        onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                        className="w-full h-10 px-3 rounded-md border border-input bg-background text-foreground ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                      >
-                        <option value="">Selecciona tu ubicación</option>
-                        <option value="Centro">Centro - $15.00</option>
-                        <option value="Norte">Norte - $25.00</option>
-                        <option value="Sur">Sur - $30.00</option>
-                        <option value="Este">Este - $20.00</option>
-                        <option value="Oeste">Oeste - $20.00</option>
-                      </select>
+                      <div className="w-full px-4 py-3 rounded-md border border-input bg-muted/50 text-muted-foreground text-sm">
+                        El costo de envío dependerá de tu ubicación. Un asesor te cotizará cuando confirmes el pedido.
+                      </div>
                     </div>
 
                     <div>
