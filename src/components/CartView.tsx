@@ -44,12 +44,26 @@ export const CartView: React.FC<CartViewProps> = ({ open, onOpenChange }) => {
     setShowOrderTypeModal(true);
   };
 
+  const getShippingCost = (location?: string) => {
+    if (!location) return 0;
+    
+    const shippingRates: { [key: string]: number } = {
+      'Centro': 15,
+      'Norte': 25,
+      'Sur': 30,
+      'Este': 20,
+      'Oeste': 20,
+    };
+    
+    return shippingRates[location] || 15;
+  };
+
   const handleFinalConfirm = () => {
     if (!orderDetails) return;
 
     const { orderType, customerDetails } = orderDetails;
     const businessPhoneNumber = '9614045971';
-    const shippingCost = 2.50;
+    const shippingCost = orderType === 'delivery' ? getShippingCost(customerDetails.location) : 0;
     const orderTypeText = orderType === 'dine-in' ? 'Para consumir en el restaurante' : 'Envío a domicilio';
     const messageTitle = orderType === 'dine-in' ? '◆ NUEVO PEDIDO - Sabores Digi' : '◆ NUEVO PEDIDO - Sabores Digi';
 
@@ -61,6 +75,7 @@ export const CartView: React.FC<CartViewProps> = ({ open, onOpenChange }) => {
       message += `◆ *Mesa:* ${customerDetails.tableNumber}\n`;
     } else {
       message += `◆ ${orderTypeText}\n`;
+      message += `◆ *Ubicación:* ${customerDetails.location}\n`;
       message += `◆ *WhatsApp:* ${customerDetails.whatsappNumber}\n`;
       message += `◆ *Dirección:* ${customerDetails.fullAddress}\n`;
       if (customerDetails.references) {
@@ -74,13 +89,15 @@ export const CartView: React.FC<CartViewProps> = ({ open, onOpenChange }) => {
     });
 
     const subtotal = getTotalPrice();
+    message += `\n◆ *Subtotal:* $${subtotal.toFixed(2)} MXN\n`;
+    
     let total = subtotal;
-
     if (orderType === 'delivery') {
+      message += `◆ *Envío:* $${shippingCost.toFixed(2)} MXN\n`;
       total += shippingCost;
     }
 
-    message += `\n◆ *Total:* $${total.toFixed(2)} MXN`;
+    message += `◆ *Total:* $${total.toFixed(2)} MXN`;
 
     if (customerDetails.additionalComments) {
       message += `\n\n◆ *Comentarios:* ${customerDetails.additionalComments}`;
@@ -199,15 +216,11 @@ export const CartView: React.FC<CartViewProps> = ({ open, onOpenChange }) => {
                   <span className="text-muted-foreground">Subtotal</span>
                   <span className="font-medium">${getTotalPrice().toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Envío</span>
-                  <span className="font-medium">$2.50</span>
-                </div>
                 <Separator />
                 <div className="flex justify-between text-lg font-bold">
                   <span>Total</span>
                   <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                    ${(getTotalPrice() + 2.50).toFixed(2)}
+                    ${getTotalPrice().toFixed(2)}
                   </span>
                 </div>
               </div>
@@ -237,7 +250,8 @@ export const CartView: React.FC<CartViewProps> = ({ open, onOpenChange }) => {
           orderType={orderDetails.orderType}
           customerDetails={orderDetails.customerDetails}
           cartItems={cartItems}
-          totalPrice={orderDetails.orderType === 'delivery' ? getTotalPrice() + 2.50 : getTotalPrice()}
+          totalPrice={orderDetails.orderType === 'delivery' ? getTotalPrice() + getShippingCost(orderDetails.customerDetails.location) : getTotalPrice()}
+          shippingCost={orderDetails.orderType === 'delivery' ? getShippingCost(orderDetails.customerDetails.location) : 0}
           onConfirm={handleFinalConfirm}
           onBack={handleSummaryBack}
         />

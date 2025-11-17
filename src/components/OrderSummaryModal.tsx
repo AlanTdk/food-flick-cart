@@ -14,6 +14,7 @@ interface OrderSummaryModalProps {
   customerDetails: any;
   cartItems: any[];
   totalPrice: number;
+  shippingCost: number;
   onConfirm: () => void;
   onBack: () => void;
 }
@@ -25,6 +26,7 @@ export const OrderSummaryModal: React.FC<OrderSummaryModalProps> = ({
   customerDetails,
   cartItems,
   totalPrice,
+  shippingCost,
   onConfirm,
   onBack,
 }) => {
@@ -63,6 +65,9 @@ export const OrderSummaryModal: React.FC<OrderSummaryModalProps> = ({
               ) : (
                 <>
                   <p>
+                    <span className="font-semibold">Ubicación:</span> {customerDetails.location}
+                  </p>
+                  <p>
                     <span className="font-semibold">WhatsApp:</span> {customerDetails.whatsappNumber}
                   </p>
                   <p>
@@ -91,9 +96,21 @@ export const OrderSummaryModal: React.FC<OrderSummaryModalProps> = ({
           </div>
 
           <div className="border-t pt-3">
-            <div className="flex justify-between text-lg font-bold">
-              <span>Total:</span>
-              <span className="text-primary">${totalPrice.toFixed(2)}</span>
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Subtotal:</span>
+                <span className="font-medium">${(totalPrice - shippingCost).toFixed(2)}</span>
+              </div>
+              {orderType === 'delivery' && shippingCost > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Envío:</span>
+                  <span className="font-medium">${shippingCost.toFixed(2)}</span>
+                </div>
+              )}
+              <div className="flex justify-between text-lg font-bold border-t pt-2">
+                <span>Total:</span>
+                <span className="text-primary">${totalPrice.toFixed(2)}</span>
+              </div>
             </div>
           </div>
 
