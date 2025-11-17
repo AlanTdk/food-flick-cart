@@ -57,8 +57,8 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
         </div>
 
         <DialogHeader>
-          <DialogTitle className="text-2xl">{product.name}</DialogTitle>
-          <DialogDescription className="text-base">
+          <DialogTitle className="text-2xl font-bold text-foreground">{product.name}</DialogTitle>
+          <DialogDescription className="text-base text-foreground/80 mt-2 leading-relaxed">
             {product.description}
           </DialogDescription>
         </DialogHeader>
