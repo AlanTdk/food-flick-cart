@@ -48,7 +48,7 @@ export const CartView: React.FC<CartViewProps> = ({ open, onOpenChange }) => {
     if (!orderDetails) return;
 
     const { orderType, customerDetails } = orderDetails;
-    const businessPhoneNumber = '9614045971';
+    const businessPhoneNumber = '529614045971';
     const orderTypeText = orderType === 'dine-in' ? 'Para consumir en el restaurante' : 'Envío a domicilio';
     const messageTitle = '◆ NUEVO PEDIDO - Sabores Digi';
 
