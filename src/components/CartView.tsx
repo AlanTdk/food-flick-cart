@@ -50,42 +50,42 @@ export const CartView: React.FC<CartViewProps> = ({ open, onOpenChange }) => {
     const { orderType, customerDetails } = orderDetails;
     const businessPhoneNumber = '529614045971';
     const orderTypeText = orderType === 'dine-in' ? 'Para consumir en el restaurante' : 'Envío a domicilio';
-    const messageTitle = '◆ NUEVO PEDIDO - Sabores Digi';
+    const messageTitle = '🍔 NUEVO PEDIDO - Sabores Digi';
 
     let message = `${messageTitle}\n\n`;
-    message += `◆ *Cliente:* ${customerDetails.name}\n`;
+    message += `👤 *Cliente:* ${customerDetails.name}\n`;
 
     if (orderType === 'dine-in') {
-      message += `◆ ${orderTypeText}\n`;
-      message += `◆ *Mesa:* ${customerDetails.tableNumber}\n`;
+      message += `🍽️ ${orderTypeText}\n`;
+      message += `📍 *Mesa:* ${customerDetails.tableNumber}\n`;
     } else {
-      message += `◆ ${orderTypeText}\n`;
-      message += `◆ *WhatsApp:* ${customerDetails.whatsappNumber}\n`;
-      message += `◆ *Dirección:* ${customerDetails.fullAddress}\n`;
+      message += `🚚 ${orderTypeText}\n`;
+      message += `📱 *WhatsApp:* ${customerDetails.whatsappNumber}\n`;
+      message += `🏠 *Dirección:* ${customerDetails.fullAddress}\n`;
       if (customerDetails.references) {
-        message += `◆ *Referencias:* ${customerDetails.references}\n`;
+        message += `📝 *Referencias:* ${customerDetails.references}\n`;
       }
     }
 
-    message += `\n◆ *Productos:*\n`;
+    message += `\n🛒 *Productos:*\n`;
     cartItems.forEach((item) => {
-      message += `• ${item.name} x${item.quantity} - $${(item.price * item.quantity).toFixed(2)}\n`;
+      message += `  • ${item.name} x${item.quantity} - $${(item.price * item.quantity).toFixed(2)}\n`;
     });
 
     const subtotal = getTotalPrice();
-    message += `\n◆ *Subtotal:* $${subtotal.toFixed(2)} MXN\n`;
+    message += `\n💵 *Subtotal:* $${subtotal.toFixed(2)} MXN\n`;
 
     if (orderType === 'delivery') {
-      message += `◆ *Envío:* A cotizar según ubicación\n`;
+      message += `🚚 *Envío:* A cotizar según ubicación\n`;
     }
 
-    message += `◆ *Total:* $${subtotal.toFixed(2)} MXN`;
+    message += `💰 *Total:* $${subtotal.toFixed(2)} MXN`;
 
     if (customerDetails.additionalComments) {
-      message += `\n\n◆ *Comentarios:* ${customerDetails.additionalComments}`;
+      message += `\n\n💬 *Comentarios:* ${customerDetails.additionalComments}`;
     }
 
-    message += `\n\n¡Gracias por tu pedido! ◆`;
+    message += `\n\n✅ ¡Gracias por tu pedido!`;
 
     const whatsappUrl = `https://wa.me/${businessPhoneNumber}?text=${encodeURIComponent(message)}`;
 
@@ -130,7 +130,7 @@ export const CartView: React.FC<CartViewProps> = ({ open, onOpenChange }) => {
                 {cartItems.map((item) => (
                   <div
                     key={item.id}
-                    className="flex gap-4 p-3 rounded-lg bg-card border transition-all hover:shadow-md"
+                    className="flex gap-3 p-3 rounded-lg bg-card border transition-all hover:shadow-md"
                   >
                     <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-md">
                       <img
@@ -140,32 +140,34 @@ export const CartView: React.FC<CartViewProps> = ({ open, onOpenChange }) => {
                       />
                     </div>
 
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-semibold text-foreground truncate">
-                        {item.name}
-                      </h4>
-                      <p className="text-sm text-muted-foreground mb-2">
-                        ${item.price.toFixed(2)} c/u
-                      </p>
+                    <div className="flex-1 min-w-0 flex flex-col justify-between">
+                      <div>
+                        <h4 className="font-semibold text-foreground text-sm sm:text-base truncate">
+                          {item.name}
+                        </h4>
+                        <p className="text-xs sm:text-sm text-muted-foreground">
+                          ${item.price.toFixed(2)} c/u
+                        </p>
+                      </div>
 
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5 sm:gap-2">
                         <Button
                           variant="outline"
                           size="icon"
-                          className="h-7 w-7"
+                          className="h-7 w-7 sm:h-8 sm:w-8"
                           onClick={() => updateQuantity(item.id, item.quantity - 1)}
                         >
                           <Minus className="h-3 w-3" />
                         </Button>
 
-                        <span className="font-semibold w-8 text-center">
+                        <span className="font-semibold w-6 sm:w-8 text-center text-sm">
                           {item.quantity}
                         </span>
 
                         <Button
                           variant="outline"
                           size="icon"
-                          className="h-7 w-7"
+                          className="h-7 w-7 sm:h-8 sm:w-8"
                           onClick={() => updateQuantity(item.id, item.quantity + 1)}
                         >
                           <Plus className="h-3 w-3" />
@@ -174,16 +176,16 @@ export const CartView: React.FC<CartViewProps> = ({ open, onOpenChange }) => {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-7 w-7 ml-auto text-destructive hover:text-destructive hover:bg-destructive/10"
+                          className="h-7 w-7 sm:h-8 sm:w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
                           onClick={() => removeFromCart(item.id)}
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                         </Button>
                       </div>
                     </div>
 
-                    <div className="text-right">
-                      <p className="font-bold text-lg bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                    <div className="text-right flex items-start pt-1">
+                      <p className="font-bold text-base sm:text-lg bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent whitespace-nowrap">
                         ${(item.price * item.quantity).toFixed(2)}
                       </p>
                     </div>
